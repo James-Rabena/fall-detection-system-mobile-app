@@ -1,37 +1,34 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../models/event_model.dart';
-import '../widgets/weekly_activity_chart.dart';
 import '../widgets/events_table.dart';
-import '../widgets/top_bar.dart';
 import '../widgets/sidebar.dart';
+import '../widgets/weekly_activity_chart.dart';
 import 'home_screen.dart';
 
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({Key? key}) : super(key: key);
+  const HistoryScreen({super.key});
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
 }
-class _HistoryScreenState extends State<HistoryScreen> {
-  int _selectedMenuIndex = 1;
 
-  final weeklyData = [
-    const WeeklyActivityData(day: 'Mon', value: 35),
-    const WeeklyActivityData(day: 'Tue', value: 20),
-    const WeeklyActivityData(day: 'Wed', value: 15),
-    const WeeklyActivityData(day: 'Thu', value: 25),
-    const WeeklyActivityData(day: 'Fri', value: 30),
-    const WeeklyActivityData(day: 'Sat', value: 35),
-    const WeeklyActivityData(day: 'Sun', value: 38),
+class _HistoryScreenState extends State<HistoryScreen> {
+  static const List<WeeklyActivityData> _weeklyData = [
+    WeeklyActivityData(day: 'Mon', value: 40),
+    WeeklyActivityData(day: 'Tue', value: 30),
+    WeeklyActivityData(day: 'Wed', value: 20),
+    WeeklyActivityData(day: 'Thu', value: 26),
+    WeeklyActivityData(day: 'Fri', value: 18),
+    WeeklyActivityData(day: 'Sat', value: 24),
+    WeeklyActivityData(day: 'Sun', value: 34),
   ];
 
-  late List<Event> events;
+  int _selectedMenuIndex = 1;
+  final List<Event> _events = _buildEvents();
 
-  @override
-  void initState() {
-    super.initState();
-    events = [
+  static List<Event> _buildEvents() {
+    return [
       Event(
         id: '#001',
         type: EventType.fallDetected,
@@ -204,25 +201,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _onMenuItemSelected(int index) {
-    setState(() {
-      _selectedMenuIndex = index;
-    });
+    setState(() => _selectedMenuIndex = index);
 
-    
     switch (index) {
-      case 0: 
+      case 0:
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
         break;
-      case 1: 
+      case 1:
         break;
-      case 2: 
+      case 2:
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Relatives screen coming soon')),
         );
         break;
-      case 3: 
+      case 3:
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Profile screen coming soon')),
         );
@@ -230,80 +224,168 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
-  void _exportCSV() {
+  void _exportCsv() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Exporting events to CSV...')),
+      const SnackBar(content: Text('Export CSV clicked')),
+    );
+  }
+
+  void _openFilter() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Filter clicked')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 800;
+    final isDesktop = MediaQuery.of(context).size.width >= 1000;
 
-    if (isMobile) {
-      return _buildMobileLayout();
-    } else {
-      return _buildDesktopLayout();
-    }
-  }
-
-  Widget _buildMobileLayout() {
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
-      appBar: const TopBar(),
-      drawer: Drawer(
-        child: Sidebar(
-          selectedIndex: _selectedMenuIndex,
-          onItemSelected: _onMenuItemSelected,
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            WeeklyActivityChart(data: weeklyData),
-            EventsTable(
-              events: events,
-              onExportCSV: _exportCSV,
+      appBar: isDesktop
+          ? null
+          : AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              foregroundColor: const Color(0xFF0F172A),
+              title: const Text(
+                'Event History',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
             ),
-            const SizedBox(height: 20),
+      drawer: isDesktop
+          ? null
+          : Drawer(
+              child: Sidebar(
+                selectedIndex: _selectedMenuIndex,
+                onItemSelected: _onMenuItemSelected,
+              ),
+            ),
+      body: SafeArea(
+        child: Row(
+          children: [
+            if (isDesktop)
+              Sidebar(
+                selectedIndex: _selectedMenuIndex,
+                onItemSelected: _onMenuItemSelected,
+              ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDesktop ? 32 : 16,
+                  vertical: isDesktop ? 24 : 16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _PageHeader(
+                      isDesktop: isDesktop,
+                      onFilterTap: _openFilter,
+                      onExportTap: _exportCsv,
+                    ),
+                    const SizedBox(height: 24),
+                    WeeklyActivityChart(data: _weeklyData),
+                    const SizedBox(height: 24),
+                    EventsTable(events: _events),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildDesktopLayout() {
-    return Scaffold(
-      backgroundColor: AppColors.lightBackground,
-      body: Row(
-        children: [
-          Sidebar(
-            selectedIndex: _selectedMenuIndex,
-            onItemSelected: _onMenuItemSelected,
+class _PageHeader extends StatelessWidget {
+  const _PageHeader({
+    required this.isDesktop,
+    required this.onFilterTap,
+    required this.onExportTap,
+  });
+
+  final bool isDesktop;
+  final VoidCallback onFilterTap;
+  final VoidCallback onExportTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleSection = const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Event History',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF0F172A),
           ),
-          Expanded(
-            child: Column(
-              children: [
-                const TopBar(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        WeeklyActivityChart(data: weeklyData),
-                        EventsTable(
-                          events: events,
-                          onExportCSV: _exportCSV,
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+        ),
+        SizedBox(height: 4),
+        Text(
+          'View past alerts and system logs.',
+          style: TextStyle(
+            fontSize: 14,
+            color: Color(0xFF64748B),
+          ),
+        ),
+      ],
+    );
+
+    final actions = Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: [
+        OutlinedButton.icon(
+          onPressed: onFilterTap,
+          icon: const Icon(Icons.filter_list_rounded, size: 18),
+          label: const Text('Filter'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: const Color(0xFF334155),
+            backgroundColor: Colors.white,
+            side: const BorderSide(color: Color(0xFFD7DEE8)),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
             ),
           ),
+        ),
+        ElevatedButton.icon(
+          onPressed: onExportTap,
+          icon: const Icon(Icons.download_rounded, size: 18),
+          label: const Text('Export CSV'),
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            backgroundColor: const Color(0xFF2563EB),
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    if (!isDesktop) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          titleSection,
+          const SizedBox(height: 16),
+          actions,
         ],
-      ),
+      );
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: titleSection),
+        actions,
+      ],
     );
   }
 }
