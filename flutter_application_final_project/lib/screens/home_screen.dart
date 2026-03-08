@@ -6,6 +6,7 @@ import '../widgets/action_buttons.dart';
 import '../widgets/recent_activity.dart';
 import '../widgets/sidebar.dart';
 import '../widgets/top_bar.dart';
+import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -39,6 +40,27 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedMenuIndex = index;
     });
+
+    // Navigate to different screens based on index
+    switch (index) {
+      case 0: // Dashboard - Already on home screen
+        break;
+      case 1: // History
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HistoryScreen()),
+        );
+        break;
+      case 2: // Relatives
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Relatives screen coming soon')),
+        );
+        break;
+      case 3: // Profile
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile screen coming soon')),
+        );
+        break;
+    }
   }
 
   void _onEmergencyCall() {
