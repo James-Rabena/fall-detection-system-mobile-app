@@ -21,7 +21,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     WeeklyActivityData(day: 'Thu', value: 26),
     WeeklyActivityData(day: 'Fri', value: 18),
     WeeklyActivityData(day: 'Sat', value: 24),
-    WeeklyActivityData(day: 'Sun', value: 34),
+    WeeklyActivityData(day: 'Sun', value: 33),
   ];
 
   int _selectedMenuIndex = 1;
