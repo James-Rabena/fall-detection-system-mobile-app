@@ -9,6 +9,7 @@ import '../widgets/top_bar.dart';
 import 'history_screen.dart';
 import 'profile_screen.dart';
 import 'relatives_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -62,6 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
           MaterialPageRoute(builder: (context) => const ProfileScreen()),
         );
         break;
+      case 4: // setttings
+      Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const SettingsScreen()),
+         );
+         break;
     }
   }
 

@@ -3,7 +3,6 @@ import '../constants/app_colors.dart';
 import '../models/contact_model.dart';
 import '../widgets/top_bar.dart';
 import '../widgets/sidebar.dart';
-import 'home_screen.dart';
 import 'profile_screen.dart';
 
 class RelativesScreen extends StatefulWidget {
@@ -63,10 +62,66 @@ class _RelativesScreenState extends State<RelativesScreen> {
   }
 
   void _addContact() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Add Contact functionality coming soon')),
-    );
-  }
+  final nameController = TextEditingController();
+  final relationController = TextEditingController();
+  final phoneController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Add New Contact'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Full Name'),
+            ),
+            TextField(
+              controller: relationController,
+              decoration: const InputDecoration(labelText: 'Relationship (e.g. Son)'),
+            ),
+            TextField(
+              controller: phoneController,
+              decoration: const InputDecoration(labelText: 'Phone Number'),
+              keyboardType: TextInputType.phone,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+          onPressed: () {
+            if (nameController.text.isNotEmpty && phoneController.text.isNotEmpty) {
+              setState(() {
+                contacts.add(
+                  Contact(
+                    id: DateTime.now().toString(), // Quick unique ID
+                    name: nameController.text,
+                    relationship: relationController.text,
+                    phoneNumber: phoneController.text,
+                    emergencyNotificationsEnabled: true,
+                  ),
+                );
+              });
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Contact Added Successfully')),
+              );
+            }
+          },
+          child: const Text('Save', style: TextStyle(color: Colors.white)),
+        ),
+      ],
+    ),
+  );
+}
 
   void _toggleNotification(int index) {
     setState(() {

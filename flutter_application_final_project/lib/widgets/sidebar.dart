@@ -38,6 +38,7 @@ class _SidebarState extends State<Sidebar> {
       const MenuItem(icon: Icons.history, label: 'History', index: 1),
       const MenuItem(icon: Icons.people, label: 'Relatives', index: 2),
       const MenuItem(icon: Icons.person, label: 'Profile', index: 3),
+      const MenuItem(icon: Icons.settings, label: 'Settings', index: 4),
     ];
   }
 
