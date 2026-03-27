@@ -199,7 +199,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _selectedBloodType,
+                          initialValue: _selectedBloodType,
                           decoration: const InputDecoration(
                             labelText: 'Blood Type',
                             border: OutlineInputBorder(),

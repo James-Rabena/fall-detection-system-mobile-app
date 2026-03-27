@@ -12,7 +12,7 @@ import 'relatives_screen.dart';
 import 'profile_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -239,7 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         style: const TextStyle(fontSize: 14, color: AppColors.textDark),
       ),
       value: value,
-      activeColor: AppColors.primary,
+      activeThumbColor: AppColors.primary,
       onChanged: onChanged,
     );
   }
